@@ -60,8 +60,9 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/8")
       .expect(200)
       .then(({ body }) => {
-        expect(typeof body).toBe("object");
-        expect(body).toMatchObject({
+        const { article } = body;
+        expect(typeof article).toBe("object");
+        expect(article).toMatchObject({
           article_id: expect.any(Number),
           title: expect.any(String),
           topic: expect.any(String),
@@ -70,6 +71,26 @@ describe("GET /api/articles/:article_id", () => {
           created_at: expect.any(String),
           article_img_url: expect.any(String),
           votes: expect.any(Number),
+        });
+      });
+  });
+  test("200: Responds with the requested article object", () => {
+    return request(app)
+      .get("/api/articles/8")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toEqual({
+          article: {
+            article_id: 8,
+            title: "Does Mitch predate civilisation?",
+            topic: "mitch",
+            author: "icellusedkars",
+            body: "Archaeologists have uncovered a gigantic statue from the dawn of humanity, and it has an uncanny resemblance to Mitch. Surely I am not the only person who can see this?!",
+            created_at: "2020-04-17T01:08:00.000Z",
+            votes: 0,
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          },
         });
       });
   });
