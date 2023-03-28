@@ -28,7 +28,6 @@ exports.getArticleById = (req, res, next) => {
 exports.getArticles = (req, res, next) => {
   selectArticles()
     .then((articles) => {
-      // console.log({ articles: articles });
       res.status(200).send({ articles: articles });
     })
     .catch((err) => {
