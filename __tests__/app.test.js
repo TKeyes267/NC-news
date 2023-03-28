@@ -12,7 +12,7 @@ afterAll(() => {
   db.end();
 });
 
-describe.only("GET /api/topics", () => {
+describe("GET /api/topics", () => {
   test("200: Responds with an array of objects, each of which should have a 'slug' and 'description' property", () => {
     return request(app)
       .get("/api/topics")
@@ -50,6 +50,43 @@ describe.only("GET /api/topics", () => {
             },
           ],
         });
+      });
+  });
+});
+
+describe("GET /api/articles/:article_id", () => {
+  test("200: Responds with a single article object with the correct properties", () => {
+    return request(app)
+      .get("/api/articles/8")
+      .expect(200)
+      .then(({ body }) => {
+        expect(typeof body).toBe("object");
+        expect(body).toMatchObject({
+          article_id: expect.any(Number),
+          title: expect.any(String),
+          topic: expect.any(String),
+          author: expect.any(String),
+          body: expect.any(String),
+          created_at: expect.any(String),
+          article_img_url: expect.any(String),
+          votes: expect.any(Number),
+        });
+      });
+  });
+  test("400: Responds with an error message when given an id that is not in the table", () => {
+    return request(app)
+      .get("/api/articles/not-a-number")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body).toEqual({ message: "Invalid ID" });
+      });
+  });
+  test("404: Responds with an error message when given an id that is not in the table", () => {
+    return request(app)
+      .get("/api/articles/88888888")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toEqual("ID not found");
       });
   });
 });
