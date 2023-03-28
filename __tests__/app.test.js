@@ -111,3 +111,39 @@ describe("GET /api/articles/:article_id", () => {
       });
   });
 });
+
+describe.only("GET /api/articles", () => {
+  test("200: Responds with an array of all the article objects, each with the relevant properties ", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(Array.isArray(articles)).toBe(true);
+        expect(articles).toHaveLength(12);
+        articles.forEach((article) => {
+          expect(article).toMatchObject({
+            article_id: expect.any(Number),
+            title: expect.any(String),
+            topic: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            comment_count: expect.any(String),
+          });
+        });
+      });
+  });
+  test("200: Array is ordered by date created descending first", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toHaveLength(12);
+        expect(articles[0].created_at).toBe("2020-11-03T09:12:00.000Z");
+        expect(articles[11].created_at).toBe("2020-01-07T14:08:00.000Z");
+      });
+  });
+});
