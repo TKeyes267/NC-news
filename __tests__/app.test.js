@@ -94,7 +94,7 @@ describe("GET /api/articles/:article_id", () => {
         });
       });
   });
-  test("400: Responds with an error message when given an id that is not in the table", () => {
+  test("400: Responds with an error message when the input ID is not a number", () => {
     return request(app)
       .get("/api/articles/not-a-number")
       .expect(400)
@@ -102,9 +102,86 @@ describe("GET /api/articles/:article_id", () => {
         expect(body).toEqual({ message: "Invalid ID" });
       });
   });
-  test("404: Responds with an error message when given an id that is not in the table", () => {
+  test("404: Responds with an error message when given an id number does not correspond with an id in the table", () => {
     return request(app)
       .get("/api/articles/88888888")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toEqual("ID not found");
+      });
+  });
+});
+
+describe("GET /api/articles", () => {
+  test("200: Responds with an array of all the article objects, each with the relevant properties ", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(Array.isArray(articles)).toBe(true);
+        expect(articles).toHaveLength(12);
+        articles.forEach((article) => {
+          expect(article).toMatchObject({
+            article_id: expect.any(Number),
+            title: expect.any(String),
+            topic: expect.any(String),
+            author: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(Number),
+          });
+        });
+      });
+  });
+  test("200: Array is ordered by date created descending first", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toHaveLength(12);
+        expect(articles).toBeSorted("created_at", { descending: true });
+      });
+  });
+});
+
+describe("GET /api/articles/:article_id/comments", () => {
+  test("200: Responds with an array of comments from a specified article id", () => {
+    return request(app)
+      .get("/api/articles/5/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        console.log(comments);
+        expect(comments).toBeInstanceOf(Array);
+        expect(comments).toBeSorted("created_at", { descending: true });
+        comments.forEach((comment) => {
+          expect(comment).toEqual(
+            expect.objectContaining({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+              article_id: expect.any(Number),
+            })
+          );
+        });
+      });
+  });
+  test("400: Responds with an error message when the input ID is not a number", () => {
+    return request(app)
+      .get("/api/articles/not-a-number/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body).toEqual({ message: "Invalid ID" });
+      });
+  });
+  test("404: Responds with an error message when given an id number does not correspond with an id in the table", () => {
+    return request(app)
+      .get("/api/articles/88888888/comments")
       .expect(404)
       .then(({ body }) => {
         expect(body.message).toEqual("ID not found");
