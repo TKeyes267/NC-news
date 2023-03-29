@@ -119,6 +119,7 @@ describe("GET /api/articles", () => {
       .expect(200)
       .then(({ body }) => {
         const { articles } = body;
+        console.log(articles);
         expect(Array.isArray(articles)).toBe(true);
         expect(articles).toHaveLength(12);
         articles.forEach((article) => {
@@ -129,9 +130,20 @@ describe("GET /api/articles", () => {
             author: expect.any(String),
             created_at: expect.any(String),
             votes: expect.any(Number),
-            comment_count: expect.any(String),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(Number),
           });
         });
+      });
+  });
+  test("200: Array is ordered by date created descending first", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toHaveLength(12);
+        expect(articles).toBeSorted("created_at", { descending: true });
       });
   });
 });
