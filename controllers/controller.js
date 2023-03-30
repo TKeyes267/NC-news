@@ -1,7 +1,4 @@
-const {
-  checkArticleIdExists,
-  checkIfCommentsExist,
-} = require("../db/seeds/utils.js");
+const { checkArticleIdExists } = require("../db/seeds/utils.js");
 const {
   selectTopics,
   selectArticleById,

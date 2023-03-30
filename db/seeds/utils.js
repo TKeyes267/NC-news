@@ -33,14 +33,3 @@ exports.checkArticleIdExists = (article_id) => {
       }
     });
 };
-
-// exports.checkIfCommentsExist = (articleID) => {
-//   return db
-//     .query(`SELECT * FROM comments WHERE comments.article_id = $1`, [articleID])
-//     .then((res) => {
-//       if (res.rows.length === 0) {
-//         return Promise.reject({ status: 404, message: "No Comments" });
-//       }
-//       return articleID;
-//     });
-// };
