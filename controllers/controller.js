@@ -1,9 +1,11 @@
-const { checkArticleIdExists } = require("../db/seeds/utils.js");
+const { checkArticleIdExists, checkComment } = require("../db/seeds/utils.js");
+
 const {
   selectTopics,
   selectArticleById,
   selectArticles,
   selectComments,
+  writeComment,
 } = require("../models/models");
 
 exports.getTopics = (req, res, next) => {
@@ -47,6 +49,26 @@ exports.getCommentsById = (req, res, next) => {
       res.status(200).send({ comments: comments });
     })
     .catch((err) => {
+      next(err);
+    });
+};
+
+exports.postComment = (req, res, next) => {
+  const { article_id } = req.params;
+  const newComment = req.body;
+
+  const checkArticle = checkArticleIdExists(article_id);
+  const write = writeComment(newComment, article_id);
+  // const check = checkComment(newComment);
+
+  return Promise.all([write, checkArticle])
+
+    .then(([comment]) => {
+      console.log(comment);
+      res.status(201).send({ comment: comment });
+    })
+    .catch((err) => {
+      console.log(err);
       next(err);
     });
 };

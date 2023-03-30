@@ -6,6 +6,7 @@ const {
   getArticleById,
   getArticles,
   getCommentsById,
+  postComment,
 } = require("./controllers/controller");
 
 const {
@@ -15,6 +16,8 @@ const {
   errorsServer,
 } = require("./errorhandling.js");
 
+app.use(express.json());
+
 app.get("/api/topics", getTopics);
 
 app.get("/api/articles/:article_id", getArticleById);
@@ -22,6 +25,8 @@ app.get("/api/articles/:article_id", getArticleById);
 app.get("/api/articles", getArticles);
 
 app.get("/api/articles/:article_id/comments", getCommentsById);
+
+app.post("/api/articles/:article_id/comments", postComment);
 
 app.use(customErrors);
 app.use(errors404);
