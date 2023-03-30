@@ -258,7 +258,7 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(body.message).toEqual("ID does not exist");
       });
   });
-  test("404: Responds with an error message when given user does not exisit in user table", () => {
+  test("404: Responds with an error message when given user does not exist in user table", () => {
     const newComment = {
       username: "Does_not_exist",
       body: "Hello World!",
@@ -291,7 +291,23 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send(newComment)
       .expect(400)
       .then(({ body }) => {
-        expect(body.message).toEqual("Invalid Request");
+        expect(body.message).toEqual("Invalid Request: Empty Request");
+      });
+  });
+  test("400: Responds with an error if extra properties are input in the POST request", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "Hello World!",
+      phone_number: 1234567890,
+    };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toEqual(
+          "Invalid Request: Please only add username and body properties"
+        );
       });
   });
 });

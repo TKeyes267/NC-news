@@ -20,7 +20,7 @@ exports.errorsPSQL = (err, req, res, next) => {
   } else if (err.code === "23503") {
     res.status(400).send({ message: "User does not exist" });
   } else if (err.code === "23502") {
-    res.status(400).send({ message: "Invalid Request" });
+    res.status(400).send({ message: "Invalid Request: Empty Request" });
   } else {
     next(err);
   }

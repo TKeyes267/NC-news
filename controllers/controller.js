@@ -59,16 +59,14 @@ exports.postComment = (req, res, next) => {
 
   const checkArticle = checkArticleIdExists(article_id);
   const write = writeComment(newComment, article_id);
-  // const check = checkComment(newComment);
+  const checkComments = checkComment(newComment);
 
-  return Promise.all([write, checkArticle])
+  return Promise.all([write, checkComments, checkArticle])
 
     .then(([comment]) => {
-      console.log(comment);
       res.status(201).send({ comment: comment });
     })
     .catch((err) => {
-      console.log(err);
       next(err);
     });
 };
