@@ -182,6 +182,15 @@ describe("GET /api/articles/:article_id/comments", () => {
         expect(comments).toBeSorted("created_at", { descending: true });
       });
   });
+  test("200: Reaponds with an empty array if there are no comments", () => {
+    return request(app)
+      .get("/api/articles/7/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(comments).toEqual([]);
+      });
+  });
   test("400: Responds with an error message when the input ID is not a number", () => {
     return request(app)
       .get("/api/articles/not-a-number/comments")
@@ -195,15 +204,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       .get("/api/articles/88888888/comments")
       .expect(404)
       .then(({ body }) => {
-        expect(body.message).toEqual("Invalid ID");
-      });
-  });
-  test("404: Reaponds with an error if the ID is correct but there are no comments", () => {
-    return request(app)
-      .get("/api/articles/7/comments")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.message).toEqual("No Comments");
+        expect(body.message).toEqual("ID does not exist");
       });
   });
 });

@@ -29,18 +29,18 @@ exports.checkArticleIdExists = (article_id) => {
     .query(`SELECT * FROM articles WHERE article_id = $1`, [article_id])
     .then((res) => {
       if (res.rows.length === 0) {
-        return Promise.reject({ status: 404, message: "Invalid ID" });
+        return Promise.reject({ status: 404, message: "ID does not exist" });
       }
     });
 };
 
-exports.checkIfCommentsExist = (articleID) => {
-  return db
-    .query(`SELECT * FROM comments WHERE comments.article_id = $1`, [articleID])
-    .then((res) => {
-      if (res.rows.length === 0) {
-        return Promise.reject({ status: 404, message: "No Comments" });
-      }
-      return articleID;
-    });
-};
+// exports.checkIfCommentsExist = (articleID) => {
+//   return db
+//     .query(`SELECT * FROM comments WHERE comments.article_id = $1`, [articleID])
+//     .then((res) => {
+//       if (res.rows.length === 0) {
+//         return Promise.reject({ status: 404, message: "No Comments" });
+//       }
+//       return articleID;
+//     });
+// };
