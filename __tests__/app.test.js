@@ -99,7 +99,7 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/not-a-number")
       .expect(400)
       .then(({ body }) => {
-        expect(body).toEqual({ message: "Invalid ID" });
+        expect(body).toEqual({ message: "Invalid Request" });
       });
   });
   test("404: Responds with an error message when given an id number does not correspond with an id in the table", () => {
@@ -107,7 +107,7 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/88888888")
       .expect(404)
       .then(({ body }) => {
-        expect(body.message).toEqual("ID not found");
+        expect(body.message).toEqual("Invalid URL");
       });
   });
 });
@@ -154,8 +154,8 @@ describe("GET /api/articles/:article_id/comments", () => {
       .expect(200)
       .then(({ body }) => {
         const { comments } = body;
-        console.log(comments);
         expect(comments).toBeInstanceOf(Array);
+        expect(comments).toHaveLength(2);
         expect(comments).toBeSorted("created_at", { descending: true });
         comments.forEach((comment) => {
           expect(comment).toEqual(
@@ -171,12 +171,23 @@ describe("GET /api/articles/:article_id/comments", () => {
         });
       });
   });
+  test("200: Responds with an array arranged by time created with the most recent first", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(comments).toBeInstanceOf(Array);
+        expect(comments).toHaveLength(11);
+        expect(comments).toBeSorted("created_at", { descending: true });
+      });
+  });
   test("400: Responds with an error message when the input ID is not a number", () => {
     return request(app)
       .get("/api/articles/not-a-number/comments")
       .expect(400)
       .then(({ body }) => {
-        expect(body).toEqual({ message: "Invalid ID" });
+        expect(body).toEqual({ message: "Invalid Request" });
       });
   });
   test("404: Responds with an error message when given an id number does not correspond with an id in the table", () => {
@@ -184,7 +195,15 @@ describe("GET /api/articles/:article_id/comments", () => {
       .get("/api/articles/88888888/comments")
       .expect(404)
       .then(({ body }) => {
-        expect(body.message).toEqual("ID not found");
+        expect(body.message).toEqual("Invalid ID");
+      });
+  });
+  test("404: Reaponds with an error if the ID is correct but there are no comments", () => {
+    return request(app)
+      .get("/api/articles/7/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toEqual("No Comments");
       });
   });
 });

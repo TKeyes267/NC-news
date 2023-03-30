@@ -11,7 +11,7 @@ exports.selectArticleById = (article_id) => {
     .query(`SELECT * FROM articles WHERE article_id= $1`, [article_id])
     .then((res) => {
       if (res.rows.length === 0) {
-        return Promise.reject({ message: "ID not found", status: 404 });
+        return Promise.reject({ message: "Invalid URL", status: 404 });
       } else {
         return res.rows[0];
       }
@@ -39,15 +39,11 @@ exports.selectComments = (article_id) => {
     .query(
       `SELECT *
     FROM comments
-    WHERE comments.article_id = $1
+    WHERE article_id = $1
     ORDER BY created_at DESC`,
       [article_id]
     )
     .then((res) => {
-      if (res.rows.length === 0) {
-        return Promise.reject({ message: "ID not found", status: 404 });
-      } else {
-        return res.rows;
-      }
+      return res.rows;
     });
 };

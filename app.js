@@ -8,6 +8,13 @@ const {
   getCommentsById,
 } = require("./controllers/controller");
 
+const {
+  customErrors,
+  errorsPSQL,
+  errors404,
+  errorsServer,
+} = require("./errorhandling.js");
+
 app.get("/api/topics", getTopics);
 
 app.get("/api/articles/:article_id", getArticleById);
@@ -16,14 +23,9 @@ app.get("/api/articles", getArticles);
 
 app.get("/api/articles/:article_id/comments", getCommentsById);
 
-app.use((err, req, res, next) => {
-  if (err.code === "22P02") {
-    res.status(400).send({ message: "Invalid ID" });
-  } else if (err.status === 404) {
-    res.status(404).send({ message: err.message });
-  } else if (err.status === 500) {
-    res.status(500).send("Internal Server Error!");
-  }
-});
+app.use(customErrors);
+app.use(errors404);
+app.use(errorsPSQL);
+app.use(errorsServer);
 
 module.exports = app;
