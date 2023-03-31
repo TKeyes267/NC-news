@@ -421,14 +421,6 @@ describe("GET /api/users", () => {
         const { users } = body;
         expect(Array.isArray(users)).toBe(true);
         expect(users).toHaveLength(4);
-      });
-  });
-  test("200: Responds with user objects that contain username, name and avatar_url properties", () => {
-    return request(app)
-      .get("/api/users")
-      .expect(200)
-      .then(({ body }) => {
-        const { users } = body;
         users.forEach((user) => {
           expect(user).toMatchObject({
             username: expect.any(String),
