@@ -107,7 +107,7 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/88888888")
       .expect(404)
       .then(({ body }) => {
-        expect(body.message).toEqual("Invalid URL");
+        expect(body).toEqual({ message: "Invalid URL" });
       });
   });
 });
@@ -135,7 +135,7 @@ describe("GET /api/articles", () => {
         });
       });
   });
-  test("200: Array is ordered by date created descending first", () => {
+  test("200: Array is ordered by date created by default descending first", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
@@ -143,6 +143,80 @@ describe("GET /api/articles", () => {
         const { articles } = body;
         expect(articles).toHaveLength(12);
         expect(articles).toBeSorted("created_at", { descending: true });
+      });
+  });
+  test("200: Array defaults to being ordered in descending order", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toHaveLength(12);
+        expect(articles).toBeSorted({ descending: true });
+      });
+  });
+  test("200: Array is ordered acensing when specified in query", () => {
+    return request(app)
+      .get("/api/articles?order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toHaveLength(12);
+        expect(articles).toBeSorted({ asending: true });
+      });
+  });
+  test("200: Array is ordered by author", () => {
+    return request(app)
+      .get("/api/articles?sort_by=author")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toHaveLength(12);
+        expect(articles).toBeSorted("author", { descending: true });
+      });
+  });
+  test("200: Should accept a topic query which filters articles of that topic", () => {
+    return request(app)
+      .get("/api/articles?topic=cats")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toBeInstanceOf(Array);
+        expect(articles.length).toBeGreaterThan(0);
+        expect(articles).toHaveLength(1);
+        articles.forEach((article) => {
+          expect(article.topic).toEqual("cats");
+        });
+      });
+  });
+  test("400: Responds with an error message when the sort by query is not a recognised category", () => {
+    return request(app)
+      .get("/api/articles?sort_by=not_a_sort_category")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body).toEqual({
+          message: "Invalid Request: Sort query is not a valid category",
+        });
+      });
+  });
+  test("400: Responds with an error message when the topic is not a recognised", () => {
+    return request(app)
+      .get("/api/articles?topic=not_a_topic")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body).toEqual({
+          message: "Invalid Request: Not a valid topic",
+        });
+      });
+  });
+  test("400: Responds with an error message when the order is not valid", () => {
+    return request(app)
+      .get("/api/articles?order=not_a_order")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body).toEqual({
+          message: "Invalid Request: Order query not valid",
+        });
       });
   });
 });
@@ -294,7 +368,7 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(body.message).toEqual("Invalid Request: Empty Request");
       });
   });
-  test("400: Responds with an error if extra properties are input in the POST request", () => {
+  test("404: Responds with an error if extra properties are input in the POST request", () => {
     const newComment = {
       username: "butter_bridge",
       body: "Hello World!",
@@ -303,7 +377,7 @@ describe("POST /api/articles/:article_id/comments", () => {
     return request(app)
       .post("/api/articles/1/comments")
       .send(newComment)
-      .expect(400)
+      .expect(404)
       .then(({ body }) => {
         expect(body.message).toEqual(
           "Invalid Request: Please only add username and body properties"

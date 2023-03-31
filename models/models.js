@@ -18,20 +18,51 @@ exports.selectArticleById = (article_id) => {
     });
 };
 
-exports.selectArticles = () => {
-  return db
-    .query(
-      `SELECT articles .*, CAST(COUNT(comments.article_id) AS INT) AS comment_count
+exports.selectArticles = (sort_by, order, topic) => {
+  let query = { sort_by, order, topic };
+
+  let orderSQL = ``;
+  let sortSQL = ``;
+  let topicSQL = ``;
+
+  let SQLQuery = `SELECT articles .*, CAST(COUNT(comments.article_id) AS INT) AS comment_count
       FROM articles
       LEFT JOIN comments
-      ON articles.article_id = comments.article_id
-      GROUP BY articles.article_id
-      ORDER BY articles.created_at DESC
-      `
-    )
-    .then((res) => {
-      return res.rows;
-    });
+      ON articles.article_id = comments.article_id`;
+
+  if (topic) {
+    topicSQL = ` WHERE topic = '${topic}' `;
+    SQLQuery = SQLQuery + topicSQL;
+  }
+
+  if (!sort_by) {
+    sortSQL = `ORDER BY articles.created_at `;
+  } else if (
+    sort_by === "title" ||
+    sort_by === "topic" ||
+    sort_by === "author" ||
+    sort_by === "body" ||
+    sort_by === "created_at" ||
+    sort_by === " article_img_url"
+  ) {
+    sortSQL = `ORDER BY articles.${sort_by} `;
+  } else {
+    sortSQL = `ORDER BY articles.created_at `;
+  }
+
+  if (!order) {
+    orderSQL = `DESC`;
+  } else if (order.toUpperCase() === "ASC" || order.toUpperCase() === "DESC") {
+    orderSQL = `${order.toUpperCase()};`;
+  }
+
+  const groupSQL = ` GROUP BY articles.article_id `;
+
+  const fullSQL = SQLQuery + groupSQL + sortSQL + orderSQL;
+
+  return db.query(fullSQL).then((res) => {
+    return res.rows;
+  });
 };
 
 exports.selectComments = (article_id) => {
@@ -43,6 +74,7 @@ exports.selectComments = (article_id) => {
     ORDER BY created_at DESC`,
       [article_id]
     )
+
     .then((res) => {
       return res.rows;
     });
