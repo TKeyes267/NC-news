@@ -71,3 +71,21 @@ exports.checkVotesAndId = (votes, article_id) => {
       });
   }
 };
+
+exports.checkCommentExists = (comment_id) => {
+  return db
+    .query(
+      `SELECT * 
+       FROM comments 
+       WHERE comment_id = $1`,
+      [comment_id]
+    )
+    .then((res) => {
+      if (res.rows.length === 0) {
+        return Promise.reject({
+          status: 404,
+          message: "Invalid Request: Comment does not exist",
+        });
+      }
+    });
+};

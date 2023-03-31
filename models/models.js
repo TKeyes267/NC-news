@@ -52,7 +52,8 @@ exports.writeComment = (newComment, article_id) => {
   const { username, body } = newComment;
   return db
     .query(
-      `INSERT INTO comments (author, body, article_id) VALUES ($1, $2, $3) RETURNING *;`,
+      `INSERT INTO comments (author, body, article_id)   VALUES ($1, $2, $3) 
+      RETURNING *;`,
       [username, body, article_id]
     )
     .then((res) => {
@@ -69,7 +70,20 @@ exports.updateVotes = (votes, article_id) => {
       RETURNING *;`,
       [votes.inc_votes, article_id]
     )
-    .then((result) => {
-      return result.rows[0];
+    .then((res) => {
+      return res.rows[0];
+    });
+};
+
+exports.removeComment = (comment_id) => {
+  return db
+    .query(
+      `DELETE FROM comments 
+       WHERE comment_id = $1 
+       RETURNING *;`,
+      [comment_id]
+    )
+    .then((res) => {
+      return res.rows[0];
     });
 };
