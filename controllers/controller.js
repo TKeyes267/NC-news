@@ -2,6 +2,7 @@ const {
   checkArticleIdExists,
   checkComment,
   checkVotesAndId,
+  checkCommentExists,
 } = require("../db/seeds/utils.js");
 
 const {
@@ -11,6 +12,7 @@ const {
   selectComments,
   writeComment,
   updateVotes,
+  removeComment,
 } = require("../models/models");
 
 exports.getTopics = (req, res, next) => {
@@ -87,6 +89,22 @@ exports.patchVotes = (req, res, next) => {
 
     .then(([updateArticle]) => {
       res.status(200).send(updateArticle);
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.deleteComment = (req, res, next) => {
+  const { comment_id } = req.params;
+
+  const check = checkCommentExists(comment_id);
+  const remove = removeComment(comment_id);
+
+  return Promise.all([remove, check])
+
+    .then(() => {
+      res.status(204).send();
     })
     .catch((err) => {
       next(err);

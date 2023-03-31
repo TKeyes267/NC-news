@@ -389,3 +389,33 @@ describe("PATCH /api/articles/:article_id", () => {
       });
   });
 });
+
+describe("DELETE /api/comments/:comment_id", () => {
+  test("204: Responds with a status and a message saying No Content", () => {
+    return request(app)
+      .del(`/api/comments/1`)
+      .expect(204)
+      .then(({ body }) => {
+        console.log(body);
+        expect(body).toEqual({});
+      });
+  });
+  test("404: Responds with an error if no comment is found on comment_id", () => {
+    return request(app)
+      .del(`/api/comments/4567`)
+      .expect(404)
+      .then(({ body }) => {
+        console.log(body);
+        expect(body.message).toEqual("Invalid Request: Comment does not exist");
+      });
+  });
+  test("400: Responds with an error if no comment is found on comment_id", () => {
+    return request(app)
+      .del(`/api/comments/not_an_id`)
+      .expect(400)
+      .then(({ body }) => {
+        console.log(body);
+        expect(body.message).toEqual("Invalid Request");
+      });
+  });
+});
