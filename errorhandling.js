@@ -1,11 +1,5 @@
 const db = require("./db/connection");
 
-exports.customErrors = (err, req, res, next) => {
-  if (err.status && err.message) {
-    res.status(err.status).send({ message: err.message });
-  } else next(err);
-};
-
 exports.errors404 = (err, req, res, next) => {
   if (err.status === 404) {
     res.status(404).send({ message: "Invalid URL" });
@@ -24,6 +18,12 @@ exports.errorsPSQL = (err, req, res, next) => {
   } else {
     next(err);
   }
+};
+
+exports.customErrors = (err, req, res, next) => {
+  if (err.status && err.message) {
+    res.status(err.status).send({ message: err.message });
+  } else next(err);
 };
 
 exports.errorsServer = (err, req, res, next) => {

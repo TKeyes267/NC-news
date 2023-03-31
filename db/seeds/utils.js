@@ -36,7 +36,6 @@ exports.checkArticleIdExists = (article_id) => {
 
 exports.checkComment = (newComment) => {
   const user = newComment.username;
-  console.log(Object.keys(newComment).length);
   if (Object.keys(newComment).length > 2) {
     return Promise.reject({
       status: 400,
@@ -56,37 +55,19 @@ exports.checkComment = (newComment) => {
   }
 };
 
-// exports.checkComment = (newComment) => {
-//   if (!newComment.username || !newComment.body) {
-//     return Promise.reject({
-//       status: 400,
-//       msg: "The request body must be structured as follows: { username: your_username, body: write your comment here }",
-//     });
-//   } else if (
-//     typeof newComment.username !== "string" ||
-//     typeof newComment.body !== "string"
-//   ) {
-//     return Promise.reject({
-//       status: 422,
-//       msg: "Username and body must be a string",
-//     });
-//   } else if (Object.keys(newComment).length > 2) {
-//     return Promise.reject({
-//       status: 422,
-//       msg: "The request body must be structured as follows: { username: your_username, body: write your comment here }",
-//     });
-//   } else {
-//     return db
-//       .query(`SELECT * FROM users WHERE users.username = $1;`, [
-//         newComment.username,
-//       ])
-//       .then((username) => {
-//         if (username.rows.length === 0) {
-//           return Promise.reject({
-//             status: 405,
-//             msg: "The username you have given does not exist in this database",
-//           });
-//         }
-//       });
-//   }
-// };
+exports.checkVotes = (votes, article_id) => {
+  if (Object.keys(votes).length > 1) {
+    return Promise.reject({
+      status: 400,
+      message: "Invalid Request: Please only add username and body properties",
+    });
+  } else {
+    return db
+      .query(`SELECT * FROM articles WHERE article_id = $1`, [article_id])
+      .then((res) => {
+        if (res.rows.length === 0) {
+          return Promise.reject({ status: 404, message: "ID does not exist" });
+        }
+      });
+  }
+};

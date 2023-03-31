@@ -311,3 +311,81 @@ describe("POST /api/articles/:article_id/comments", () => {
       });
   });
 });
+
+describe("PATCH /api/articles/:article_id", () => {
+  test("200: Responds with updated articles object with votes increased by specified amount", () => {
+    const newVotes = { inc_votes: 2 };
+    return request(app)
+      .patch(`/api/articles/1`)
+      .send(newVotes)
+      .expect(201)
+      .then(({ body }) => {
+        expect(typeof body).toBe("object");
+        expect(body).toMatchObject({
+          article_id: expect.any(Number),
+          title: expect.any(String),
+          topic: expect.any(String),
+          author: expect.any(String),
+          body: expect.any(String),
+          created_at: expect.any(String),
+          votes: 102,
+        });
+      });
+  });
+  test("400: Responds with an error when a non interger is input to the votes function", () => {
+    const newVotes = { inc_votes: "string" };
+    return request(app)
+      .patch(`/api/articles/1`)
+      .send(newVotes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body).toEqual({
+          message: "Invalid Request",
+        });
+      });
+  });
+  test("400: Responds with an error message when the input ID is not a number", () => {
+    const newVotes = { inc_votes: 2 };
+    return request(app)
+      .patch("/api/articles/not-a-number")
+      .send(newVotes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body).toEqual({
+          message: "Invalid Request",
+        });
+      });
+  });
+  test("404: Responds with an error message when given an id number does not correspond with an id in the table", () => {
+    const newVotes = { inc_votes: 2 };
+    return request(app)
+      .patch("/api/articles/88888888")
+      .send(newVotes)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toEqual("ID does not exist");
+      });
+  });
+  test("400: Responds with an error if the votes object is left empty", () => {
+    const newVotes = {};
+    return request(app)
+      .patch("/api/articles/1")
+      .send(newVotes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toEqual("Invalid Request: Empty Request");
+      });
+  });
+  test("400: Responds with an error if extra properties are input in the PATCH request", () => {
+    const newVotes = { inc_votes: 2, extraProperty: true };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(newVotes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toEqual(
+          "Invalid Request: Please only add username and body properties"
+        );
+      });
+  });
+});

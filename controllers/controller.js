@@ -1,4 +1,8 @@
-const { checkArticleIdExists, checkComment } = require("../db/seeds/utils.js");
+const {
+  checkArticleIdExists,
+  checkComment,
+  checkVotes,
+} = require("../db/seeds/utils.js");
 
 const {
   selectTopics,
@@ -6,6 +10,7 @@ const {
   selectArticles,
   selectComments,
   writeComment,
+  updateVotes,
 } = require("../models/models");
 
 exports.getTopics = (req, res, next) => {
@@ -65,6 +70,23 @@ exports.postComment = (req, res, next) => {
 
     .then(([comment]) => {
       res.status(201).send({ comment: comment });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.patchVotes = (req, res, next) => {
+  const { article_id } = req.params;
+  const votes = req.body;
+
+  const update = updateVotes(votes, article_id);
+  const voteCheck = checkVotes(votes, article_id);
+
+  return Promise.all([update, voteCheck])
+
+    .then(([updateArticle]) => {
+      res.status(201).send(updateArticle);
     })
     .catch((err) => {
       next(err);
