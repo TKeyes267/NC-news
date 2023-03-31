@@ -38,7 +38,7 @@ exports.checkComment = (newComment) => {
   const user = newComment.username;
   if (Object.keys(newComment).length > 2) {
     return Promise.reject({
-      status: 400,
+      status: 404,
       message: "Invalid Request: Please only add username and body properties",
     });
   } else {
@@ -88,4 +88,54 @@ exports.checkCommentExists = (comment_id) => {
         });
       }
     });
+};
+
+exports.checkSortByQuery = (sort_by) => {
+  if (sort_by === undefined) {
+    return sort_by;
+  } else if (
+    sort_by === "title" ||
+    sort_by === "topic" ||
+    sort_by === "author" ||
+    sort_by === "body" ||
+    sort_by === "created_at" ||
+    sort_by === " article_img_url"
+  ) {
+    return sort_by;
+  } else {
+    return Promise.reject({
+      status: 400,
+      message: "Invalid Request: Sort query is not a valid category",
+    });
+  }
+};
+
+exports.checkOrderQuery = (order) => {
+  if (
+    !order ||
+    order.toUpperCase() === "ASC" ||
+    order.toUpperCase() === "DESC"
+  ) {
+    return order;
+  } else if (order.toUpperCase() !== "ASC" || order.toUpperCase() !== "DESC") {
+    return Promise.reject({
+      status: 400,
+      message: "Invalid Request: Order query not valid",
+    });
+  }
+};
+
+exports.checkTopicQuery = (topic) => {
+  if (topic) {
+    return db
+      .query(`SELECT * FROM topics WHERE topics.slug = $1;`, [topic])
+      .then((topic) => {
+        if (topic.rows.length === 0) {
+          return Promise.reject({
+            status: 400,
+            message: "Invalid Request: Not a valid topic",
+          });
+        }
+      });
+  }
 };

@@ -3,6 +3,9 @@ const {
   checkComment,
   checkVotesAndId,
   checkCommentExists,
+  checkSortByQuery,
+  checkOrderQuery,
+  checkTopicQuery,
 } = require("../db/seeds/utils.js");
 
 const {
@@ -38,8 +41,18 @@ exports.getArticleById = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  selectArticles()
-    .then((articles) => {
+  const { sort_by, order, topic } = req.query;
+
+  selectArticles(sort_by, order, topic);
+
+  const select = selectArticles(sort_by, order, topic);
+  const checkSort = checkSortByQuery(sort_by);
+  const checkOrder = checkOrderQuery(order);
+  const checkTopic = checkTopicQuery(topic);
+
+  return Promise.all([select, checkSort, checkOrder, checkTopic])
+
+    .then(([articles]) => {
       res.status(200).send({ articles: articles });
     })
     .catch((err) => {
