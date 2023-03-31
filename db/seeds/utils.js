@@ -55,7 +55,7 @@ exports.checkComment = (newComment) => {
   }
 };
 
-exports.checkVotes = (votes, article_id) => {
+exports.checkVotesAndId = (votes, article_id) => {
   if (Object.keys(votes).length > 1) {
     return Promise.reject({
       status: 400,

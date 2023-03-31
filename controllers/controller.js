@@ -1,7 +1,7 @@
 const {
   checkArticleIdExists,
   checkComment,
-  checkVotes,
+  checkVotesAndId,
 } = require("../db/seeds/utils.js");
 
 const {
@@ -81,12 +81,12 @@ exports.patchVotes = (req, res, next) => {
   const votes = req.body;
 
   const update = updateVotes(votes, article_id);
-  const voteCheck = checkVotes(votes, article_id);
+  const voteCheck = checkVotesAndId(votes, article_id);
 
   return Promise.all([update, voteCheck])
 
     .then(([updateArticle]) => {
-      res.status(201).send(updateArticle);
+      res.status(200).send(updateArticle);
     })
     .catch((err) => {
       next(err);
