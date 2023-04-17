@@ -17,6 +17,7 @@ const {
   updateVotes,
   removeComment,
   selectUsers,
+  readEndPoints,
 } = require("../models/models");
 
 exports.getTopics = (req, res, next) => {
@@ -129,6 +130,16 @@ exports.getUsers = (req, res, next) => {
   selectUsers()
     .then((users) => {
       res.status(200).send({ users: users });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.getEndpoints = (req, res, next) => {
+  readEndPoints()
+    .then((allEndPoints) => {
+      res.status(200).send({ allEndPoints });
     })
     .catch((err) => {
       next(err);

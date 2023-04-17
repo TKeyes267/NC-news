@@ -505,3 +505,19 @@ describe("GET /api/users", () => {
       });
   });
 });
+
+describe("GET /api Tests", () => {
+  test("/api - Status 200: Responds with the endpoints.json file describing all the available endpoints of the API", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body }) => {
+        console.log(body.allEndPoints);
+        expect(body.allEndPoints).toBeInstanceOf(Object);
+      });
+  });
+
+  test("throws an error if route is invalid", () => {
+    return request(app).get("/not-a-route").expect(404);
+  });
+});

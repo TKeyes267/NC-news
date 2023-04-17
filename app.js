@@ -1,3 +1,4 @@
+const cors = require("cors");
 const express = require("express");
 const app = express();
 
@@ -10,6 +11,7 @@ const {
   patchVotes,
   deleteComment,
   getUsers,
+  getEndpoints,
 } = require("./controllers/controller");
 
 const {
@@ -19,7 +21,13 @@ const {
   errorsServer,
 } = require("./errorhandling.js");
 
+app.use(cors());
+
 app.use(express.json());
+
+//Endpoints
+
+app.get("/api", getEndpoints);
 
 app.get("/api/topics", getTopics);
 
@@ -36,6 +44,8 @@ app.patch("/api/articles/:article_id", patchVotes);
 app.delete("/api/comments/:comment_id", deleteComment);
 
 app.get("/api/users", getUsers);
+
+//Error handling
 
 app.use(customErrors);
 app.use(errors404);
