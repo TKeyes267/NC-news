@@ -98,6 +98,7 @@ exports.checkSortByQuery = (sort_by) => {
     sort_by === "topic" ||
     sort_by === "author" ||
     sort_by === "body" ||
+    sort_by === "votes" ||
     sort_by === "created_at" ||
     sort_by === " article_img_url"
   ) {

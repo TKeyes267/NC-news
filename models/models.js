@@ -43,8 +43,9 @@ exports.selectArticles = (sort_by, order, topic) => {
     sort_by === "topic" ||
     sort_by === "author" ||
     sort_by === "body" ||
+    sort_by === "votes" ||
     sort_by === "created_at" ||
-    sort_by === " article_img_url"
+    sort_by === "article_img_url"
   ) {
     sortSQL = `ORDER BY articles.${sort_by} `;
   } else {

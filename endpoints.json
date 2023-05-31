@@ -85,31 +85,7 @@
       ]
     }
   },
-  "POST /api/topics": {
-    "description": "posts a new topic to the database",
-    "queries": [],
-    "exampleResponse": {
-      "topic": [
-        {
-          "slug": "Topic title",
-          "description": "Description of new topic title here"
-        }
-      ]
-    }
-  },
-  "POST /api/users": {
-    "description": "posts a new user to the database",
-    "queries": [],
-    "exampleResponse": {
-      "user": [
-        {
-          "username": "username",
-          "name": "User's name",
-          "avatar_url": "https://www.link.com/avatar_link.png"
-        }
-      ]
-    }
-  },
+
   "PATCH /api/articles/:article_id": {
     "description": "patches/updates an existing article by article_id and increases/decreases the votes property by the specified amount",
     "queries": [],

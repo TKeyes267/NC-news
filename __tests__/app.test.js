@@ -175,6 +175,17 @@ describe("GET /api/articles", () => {
         expect(articles).toBeSorted("author", { descending: true });
       });
   });
+  test("200: Array is ordered by votes", () => {
+    return request(app)
+      .get("/api/articles?sort_by=votes")
+      .expect(200)
+      .then(({ body }) => {
+        console.log(body);
+        const { articles } = body;
+        expect(articles).toHaveLength(12);
+        expect(articles).toBeSorted("votes", { descending: true });
+      });
+  });
   test("200: Should accept a topic query which filters articles of that topic", () => {
     return request(app)
       .get("/api/articles?topic=cats")
